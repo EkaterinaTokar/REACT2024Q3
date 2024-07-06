@@ -1,7 +1,7 @@
 import React from 'react';
 
 class SearchResults extends React.Component {
-  // render() {}
+  render() {}
 }
 
 export default SearchResults;

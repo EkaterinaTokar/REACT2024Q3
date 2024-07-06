@@ -1,10 +1,10 @@
 import React from 'react';
-//import SearchBar from './SearchBar ';
+import SearchBar from './SearchBar ';
 import SearchResults from './SearchResults';
 import { SearchResult } from '../utils/interface';
 
 interface MainPageState {
-  searchTerm: string;
+  searchInput: string;
   loading: boolean;
   error: boolean;
   results: SearchResult[];
@@ -16,7 +16,7 @@ class MainPage extends React.Component<Record<string, never>, MainPageState> {
   constructor(props: Record<string, never>) {
     super(props);
     this.state = {
-      searchTerm: localStorage.getItem('searchTerm') || '',
+      searchInput: localStorage.getItem('searchInput') || '',
       loading: false,
       error: false,
       results: [],
@@ -25,20 +25,20 @@ class MainPage extends React.Component<Record<string, never>, MainPageState> {
     };
   }
   componentDidMount() {
-    const { searchTerm } = this.state;
-    if (searchTerm) {
-      this.handleSearch(searchTerm);
+    const { searchInput } = this.state;
+    if (searchInput) {
+      this.handleSearch(searchInput);
     }
     this.handleSearch('');
   }
   handleSearch = (query: string) => {
-    localStorage.setItem('searchTerm', query);
+    localStorage.setItem('searchInput', query);
     this.setState(
-      { searchTerm: query, loading: true, error: false },
+      { searchInput: query, loading: true, error: false },
       async () => {
         try {
           //  const results = api;
-          //this.setState({ results, loading: false });
+          // this.setState({ results, loading: false });
         } catch (error) {
           console.error('Error fetching data:', error);
           this.setState({ error: true, loading: false });
@@ -52,7 +52,7 @@ class MainPage extends React.Component<Record<string, never>, MainPageState> {
     return (
       <>
         <div>
-          {/* <SearchBar /> */}
+          <SearchBar updateSearch={this.handleSearch} />
           {loading ? (
             <h4>Loading...</h4>
           ) : error ? (
