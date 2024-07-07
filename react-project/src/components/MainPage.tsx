@@ -3,6 +3,8 @@ import SearchBar from './SearchBar ';
 import SearchResults from './SearchResults';
 import { SearchResult } from '../utils/interface';
 import { ApiService } from '../api/api-service';
+import ErrorButton from './ErrButton';
+import styles from './MainPage.module.css';
 
 interface MainPageState {
   searchInput: string;
@@ -29,34 +31,33 @@ class MainPage extends React.Component<Record<string, never>, MainPageState> {
   }
   componentDidMount() {
     const { searchInput } = this.state;
-    if (searchInput) {
-      this.handleSearch(searchInput);
+    if (!searchInput) {
+      this.handleSearch('');
     }
-    this.handleSearch('');
+    this.handleSearch(searchInput);
   }
 
-  handleSearch = (query: string) => {
+  handleSearch = async (query: string) => {
     localStorage.setItem('searchInput', query);
-    this.setState(
-      { searchInput: query, loading: true, error: false },
-      async () => {
-        try {
-          const results = await this.apiService.fetchResults(query);
-          this.setState({ results, loading: false });
-        } catch (error) {
-          console.error('Error fetching data:', error);
-          this.setState({ error: true, loading: false });
-        }
-      },
-    );
+    this.setState({ searchInput: query, loading: true, error: false });
+    try {
+      const results = await this.apiService.fetchResults(query);
+      this.setState({ results, loading: false });
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      this.setState({ error: true, loading: false });
+    }
   };
+
   render() {
     const { loading, error, results } = this.state;
     return (
-      <>
-        <div>
-          {/* <div nonExistentAttribute="value">Content</div> */}
+      <div className={styles.wrapper}>
+        <header className={styles.wrapperHeader}>
+          <ErrorButton />
           <SearchBar updateSearch={this.handleSearch} />
+        </header>
+        <main>
           {loading ? (
             <h4>Loading...</h4>
           ) : error ? (
@@ -64,8 +65,8 @@ class MainPage extends React.Component<Record<string, never>, MainPageState> {
           ) : (
             <SearchResults resultCards={results} />
           )}
-        </div>
-      </>
+        </main>
+      </div>
     );
   }
 }

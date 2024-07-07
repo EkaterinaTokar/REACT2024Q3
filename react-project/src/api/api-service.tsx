@@ -3,8 +3,7 @@ import { SearchResult } from '../utils/interface';
 export class ApiService {
   async fetchResults(searchTerm: string) {
     try {
-      // let apiUrl = `https://swapi.dev/api/planets?page=${page}`;
-      let apiUrl = `https://swapi.dev/api/planets`;
+      let apiUrl = `https://swapi.dev/api/planets/`;
       if (searchTerm && searchTerm.trim() !== '') {
         apiUrl = `https://swapi.dev/api/planets/?search=${searchTerm}`;
       }
@@ -22,7 +21,6 @@ export class ApiService {
           gravity: item.gravity,
         }),
       );
-      console.log('Response data:', data);
       return results;
     } catch (error) {
       console.error('Error fetching data:', error);
