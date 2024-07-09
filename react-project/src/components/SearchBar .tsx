@@ -1,49 +1,52 @@
 import React, { ChangeEvent, FormEvent } from 'react';
 import styles from './SearchBar.module.css';
+import { useLocalStorage } from './CustomHookLocalStorage';
 
 interface SearchBarProps {
   updateSearch: (inputValue: string) => void;
 }
 
-interface SearchBarState {
-  inputValue: string;
-}
-class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
-  constructor(props: SearchBarProps) {
-    super(props);
-    this.state = {
-      inputValue: localStorage.getItem('inputValue') || '',
-    };
-  }
-
-  handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    this.setState({ inputValue: event.target.value });
+// interface SearchBarState {
+//   inputValue: string;
+// }
+const SearchBar: React.FC<SearchBarProps> = ({ updateSearch }) => {
+  //React.Component<SearchBarProps, SearchBarState>
+  // constructor(props: SearchBarProps) {
+  //   super(props);
+  //   this.state = {
+  //     inputValue: localStorage.getItem('inputValue') || '',
+  //   };
+  // }
+  // const [inputValue, setInputValue] = useState<string>(
+  //   localStorage.getItem('searchInput') || '',
+  // );
+  const [inputValue, setInputValue] = useLocalStorage('searchInput', '');
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value);
   };
 
-  handleSubmit = (event: FormEvent) => {
+  const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
 
-    const updatedSearchTerm = this.state.inputValue.trim();
+    const updatedSearchTerm = inputValue.trim();
     localStorage.setItem('searchInput', updatedSearchTerm);
-    this.props.updateSearch(updatedSearchTerm);
+    updateSearch(updatedSearchTerm);
   };
 
-  render() {
-    return (
-      <form className={styles.searchForm} onSubmit={this.handleSubmit}>
-        <input
-          type="text"
-          placeholder="Search…"
-          className={styles.searchInput}
-          value={this.state.inputValue}
-          onChange={this.handleInputChange}
-        />
-        <button type="submit" className={styles.searchButton}>
-          Search
-        </button>
-      </form>
-    );
-  }
-}
+  return (
+    <form className={styles.searchForm} onSubmit={handleSubmit}>
+      <input
+        type="text"
+        placeholder="Search…"
+        className={styles.searchInput}
+        value={inputValue}
+        onChange={handleInputChange}
+      />
+      <button type="submit" className={styles.searchButton}>
+        Search
+      </button>
+    </form>
+  );
+};
 
 export default SearchBar;
