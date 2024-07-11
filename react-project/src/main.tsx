@@ -5,7 +5,7 @@ import './index.css';
 //import { loader as rootLoader } from './components/MainPage.tsx';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ErrorPage from './components/ErrorPage.tsx';
-//import Card, { loader as cardLoader } from './components/Card.tsx';
+import Card, { loader as cardLoader } from './components/Card.tsx';
 
 const router = createBrowserRouter([
   {
@@ -16,8 +16,8 @@ const router = createBrowserRouter([
     children: [
       {
         path: 'card/:cardName',
-        //element: <Card />,
-        //loader: cardLoader,
+        element: <Card />,
+        loader: cardLoader,
       },
     ],
   },
