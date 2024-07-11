@@ -1,28 +1,31 @@
 import React from 'react';
 import styles from './SearchResults.module.css';
 import { SearchResult } from '../utils/interface';
+import { NavLink } from 'react-router-dom';
 
 interface SearchResultsProps {
   resultCards: SearchResult[];
 }
 
 const SearchResults: React.FC<SearchResultsProps> = ({ resultCards }) => {
-  //extends React.Component<SearchResultsProps> {
-  // constructor(props: SearchResultsProps) {
-  //   super(props);
-  //   this.state = {
-  //     resultCards: [],
-  //   };
-  // }
-  //const { resultCards } = this.props;
+  console.log(resultCards);
+  const handleClickResult: React.MouseEventHandler<HTMLDivElement> = (
+    event,
+  ) => {
+    event.stopPropagation();
+  };
+
   return (
     <div className={styles.searchResults}>
       {resultCards.map((item, index) => (
-        <div key={index} className={styles.resultCard}>
-          <h3 className={styles.title}>{item.name}</h3>
-          <p className={styles.description}>climate: {item.climate}</p>
-          <p className={styles.description}>gravity: {item.gravity}</p>
-          <p className={styles.description}>diameter: {item.diameter}</p>
+        <div
+          key={index}
+          className={styles.resultCard}
+          onClick={handleClickResult}
+        >
+          <NavLink className={styles.title} to={`/card/${item.name}`}>
+            <p>{item.name}</p>
+          </NavLink>
         </div>
       ))}
     </div>

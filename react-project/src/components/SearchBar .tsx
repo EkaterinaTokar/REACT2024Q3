@@ -10,17 +10,8 @@ interface SearchBarProps {
 //   inputValue: string;
 // }
 const SearchBar: React.FC<SearchBarProps> = ({ updateSearch }) => {
-  //React.Component<SearchBarProps, SearchBarState>
-  // constructor(props: SearchBarProps) {
-  //   super(props);
-  //   this.state = {
-  //     inputValue: localStorage.getItem('inputValue') || '',
-  //   };
-  // }
-  // const [inputValue, setInputValue] = useState<string>(
-  //   localStorage.getItem('searchInput') || '',
-  // );
   const [inputValue, setInputValue] = useLocalStorage('searchInput', '');
+
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
@@ -36,10 +27,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ updateSearch }) => {
   return (
     <form className={styles.searchForm} onSubmit={handleSubmit}>
       <input
-        type="text"
+        type="search"
         placeholder="Search…"
         className={styles.searchInput}
         value={inputValue}
+        name="search"
         onChange={handleInputChange}
       />
       <button type="submit" className={styles.searchButton}>
