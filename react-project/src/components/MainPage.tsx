@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import SearchBar from './SearchBar ';
 import SearchResults from './SearchResults';
 import { SearchResult } from '../utils/interface';
@@ -43,18 +43,24 @@ const MainPage: React.FC = () => {
   const [error, setError] = useState<boolean>(false);
   const [results, setResults] = useState<SearchResult[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageCount, setCount] = useState<number>(1);
+  //const [pageCount, setCount] = useState<number>(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const nextPageRef = useRef<string | null>(null);
+  const prevPageRef = useRef<string | null>(null);
   const [showDetails, setShowDetails] = useState<boolean>(false);
   const navigate = useNavigate();
+  const currentURLRef = useRef<string | null>(null);
+  //const location = useLocation();
 
   const handleSearch = useCallback(
-    async (query: string) => {
+    async (query: string, pageUrl: string | null = null) => {
       localStorage.setItem('searchInput', query);
       setSearchInput(query);
       setLoading(true);
       setError(false);
       try {
-        const fetchedResults = await apiService(query, currentPage);
+        console.log('pageUrl', pageUrl);
+        const fetchedResults = await apiService(query, pageUrl);
         const results: SearchResult[] = fetchedResults.results.map(
           (item: SearchResult) => ({
             name: item.name,
@@ -63,17 +69,31 @@ const MainPage: React.FC = () => {
             gravity: item.gravity,
           }),
         );
+
+        //const count = fetchedResults.count;
+        setTotalCount(fetchedResults.count);
+        console.log('fetchedResults next: ', fetchedResults.next);
+        console.log('fetchedResults previous: ', fetchedResults.previous);
         setSearchInput(query);
         setLoading(false);
         setResults(results);
-        setCount(fetchedResults.count / 10);
+        currentURLRef.current = pageUrl
+          ? pageUrl
+          : `https://swapi.dev/api/planets/?search=t&page=2`;
+        nextPageRef.current = fetchedResults.next;
+        prevPageRef.current = fetchedResults.previous;
+        console.log(currentURLRef.current);
+        console.log(nextPageRef.current);
+        if (nextPageRef.current === null && prevPageRef.current === null) {
+          setCurrentPage(1);
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
         setLoading(false);
         setError(true);
       }
     },
-    [setSearchInput, setError, setLoading, currentPage],
+    [setSearchInput, setError],
   );
 
   useEffect(() => {
@@ -89,6 +109,44 @@ const MainPage: React.FC = () => {
       setShowDetails(false);
       navigate('/', { replace: true });
     }
+  };
+
+  const handlePageChange = useCallback(
+    (page: number) => {
+      setCurrentPage(page);
+      handleSearch(searchInput, `https://swapi.dev/api/planets/?page=${page}`);
+    },
+    [handleSearch, searchInput],
+  );
+
+  const handlePageChangeNext = useCallback(() => {
+    if (nextPageRef.current) {
+      setCurrentPage(currentPage + 1);
+      handleSearch(searchInput, nextPageRef.current);
+    }
+  }, [handleSearch, searchInput, currentPage]);
+
+  const handlePageChangePrev = useCallback(() => {
+    if (prevPageRef.current) {
+      setCurrentPage(currentPage - 1);
+      handleSearch(searchInput, prevPageRef.current);
+    }
+  }, [handleSearch, searchInput, currentPage]);
+
+  const getPageNumbers = () => {
+    const maxPagesToShow = 5;
+    const pages = [];
+    const startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+    const endPage = Math.min(
+      Math.ceil(totalCount / 10),
+      startPage + maxPagesToShow - 1,
+    );
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+
+    return pages;
   };
 
   return (
@@ -109,7 +167,35 @@ const MainPage: React.FC = () => {
                 resultCards={results}
                 setShowDetails={setShowDetails}
               />
-              <div className={styles.pagination}></div>
+              <div className={styles.pagination}>
+                <button
+                  onClick={handlePageChangePrev}
+                  disabled={!prevPageRef.current}
+                >
+                  Previous
+                </button>
+                {getPageNumbers().map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    disabled={
+                      page === currentPage ||
+                      nextPageRef.current === currentURLRef.current
+                    }
+                  >
+                    {page}
+                  </button>
+                ))}
+                <button
+                  onClick={handlePageChangeNext}
+                  disabled={
+                    !nextPageRef.current ||
+                    nextPageRef.current === currentURLRef.current
+                  }
+                >
+                  Next
+                </button>
+              </div>
             </div>
             {showDetails && (
               <div className={styles.wrapperDetails}>

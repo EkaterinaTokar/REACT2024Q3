@@ -1,8 +1,12 @@
 //import { SearchResult } from '../utils/interface';
 
-export async function apiService(searchTerm: string, page?: number) {
+export async function apiService(
+  searchTerm: string,
+  pageUrl: string | null = null,
+) {
   try {
-    let apiUrl = `https://swapi.dev/api/planets/?page=${page}`;
+    let apiUrl = pageUrl ? pageUrl : `https://swapi.dev/api/planets/`;
+    //let apiUrl = `https://swapi.dev/api/planets/?page=${page}`;
     //let apiUrl = `https://swapi.dev/api/planets/`;
     if (searchTerm && searchTerm.trim() !== '') {
       apiUrl = `https://swapi.dev/api/planets/?search=${searchTerm}`;
@@ -12,6 +16,7 @@ export async function apiService(searchTerm: string, page?: number) {
       throw new Error('Error....');
     }
     const data = await response.json();
+    console.log('data: ', data);
     // const results: SearchResult[] = data.results.map((item: SearchResult) => ({
     //   name: item.name,
     //   diameter: item.diameter,

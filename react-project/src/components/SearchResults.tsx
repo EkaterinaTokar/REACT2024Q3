@@ -12,7 +12,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   resultCards,
   setShowDetails,
 }) => {
-  console.log(resultCards);
+  //console.log(resultCards);
   const handleClickResult: React.MouseEventHandler<HTMLDivElement> = (
     event,
   ) => {
