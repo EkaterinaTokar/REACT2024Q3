@@ -5,14 +5,19 @@ import { NavLink } from 'react-router-dom';
 
 interface SearchResultsProps {
   resultCards: SearchResult[];
+  setShowDetails: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const SearchResults: React.FC<SearchResultsProps> = ({ resultCards }) => {
+const SearchResults: React.FC<SearchResultsProps> = ({
+  resultCards,
+  setShowDetails,
+}) => {
   console.log(resultCards);
   const handleClickResult: React.MouseEventHandler<HTMLDivElement> = (
     event,
   ) => {
     event.stopPropagation();
+    setShowDetails(true);
   };
 
   return (

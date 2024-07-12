@@ -6,7 +6,7 @@ import { apiService } from '../api/api-service';
 import ErrorButton from './ErrButton';
 import styles from './MainPage.module.css';
 import { useLocalStorage } from './CustomHookLocalStorage';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 // interface MainPageState {
 //   searchInput: string;
@@ -16,6 +16,12 @@ import { Outlet } from 'react-router-dom';
 //   next: string | null;
 //   previous: string | null;
 // }
+interface LoaderData {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: SearchResult[];
+}
 
 // export async function loader({ request }: LoaderFunctionArgs) {
 //   const url = new URL(request.url);
@@ -31,11 +37,15 @@ const MainPage: React.FC = () => {
   //   next,
   //   previous,
   //   results: initialResults,
-  // } = useLoaderData();
+  // } = useLoaderData() as LoaderData;
   const [searchInput, setSearchInput] = useLocalStorage('searchInput', '');
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
   const [results, setResults] = useState<SearchResult[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageCount, setCount] = useState<number>(1);
+  const [showDetails, setShowDetails] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const handleSearch = useCallback(
     async (query: string) => {
@@ -44,7 +54,7 @@ const MainPage: React.FC = () => {
       setLoading(true);
       setError(false);
       try {
-        const fetchedResults = await apiService(query);
+        const fetchedResults = await apiService(query, currentPage);
         const results: SearchResult[] = fetchedResults.results.map(
           (item: SearchResult) => ({
             name: item.name,
@@ -56,13 +66,14 @@ const MainPage: React.FC = () => {
         setSearchInput(query);
         setLoading(false);
         setResults(results);
+        setCount(fetchedResults.count / 10);
       } catch (error) {
         console.error('Error fetching data:', error);
         setLoading(false);
         setError(true);
       }
     },
-    [setSearchInput, setError, setLoading],
+    [setSearchInput, setError, setLoading, currentPage],
   );
 
   useEffect(() => {
@@ -72,6 +83,13 @@ const MainPage: React.FC = () => {
       handleSearch(searchInput);
     }
   }, [searchInput, handleSearch]);
+
+  const handleClickDetails = () => {
+    if (showDetails) {
+      setShowDetails(false);
+      navigate('/', { replace: true });
+    }
+  };
 
   return (
     <div className={styles.wrapper}>
@@ -85,14 +103,19 @@ const MainPage: React.FC = () => {
         ) : error ? (
           <div>Error loading results</div>
         ) : (
-          <div className={styles.wrapperMain}>
+          <div className={styles.wrapperMain} onClick={handleClickDetails}>
             <div className={styles.wrapperResults}>
-              <SearchResults resultCards={results} />
+              <SearchResults
+                resultCards={results}
+                setShowDetails={setShowDetails}
+              />
+              <div className={styles.pagination}></div>
             </div>
-
-            <div className={styles.wrapperDetails}>
-              <Outlet />
-            </div>
+            {showDetails && (
+              <div className={styles.wrapperDetails}>
+                <Outlet />
+              </div>
+            )}
           </div>
         )}
       </main>

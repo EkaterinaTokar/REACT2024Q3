@@ -3,6 +3,7 @@ import React from 'react';
 import {
   LoaderFunctionArgs,
   useLoaderData,
+  useNavigate,
 } from 'react-router-dom';
 import { apiService } from '../api/api-service';
 
@@ -21,8 +22,10 @@ export async function loader({ params }: LoaderFunctionArgs) {
 }
 const Card: React.FC = () => {
   const cardData = useLoaderData() as Card;
+  const navigate = useNavigate();
 
   const handleClose = () => {
+    navigate('/', { replace: true });
   };
 
   return (
