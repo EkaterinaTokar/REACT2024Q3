@@ -1,18 +1,19 @@
 import React from 'react';
 import styles from './SearchResults.module.css';
-import { SearchResult } from '../utils/interface';
+import { SearchResult } from '../../utils/interface';
 import { NavLink } from 'react-router-dom';
 
 interface SearchResultsProps {
   resultCards: SearchResult[];
   setShowDetails: React.Dispatch<React.SetStateAction<boolean>>;
+  currentPage: number;
 }
 
 const SearchResults: React.FC<SearchResultsProps> = ({
   resultCards,
   setShowDetails,
+  currentPage,
 }) => {
-  //console.log(resultCards);
   const handleClickResult: React.MouseEventHandler<HTMLDivElement> = (
     event,
   ) => {
@@ -24,11 +25,15 @@ const SearchResults: React.FC<SearchResultsProps> = ({
     <div className={styles.searchResults}>
       {resultCards.map((item, index) => (
         <div
-          key={index}
+          key={item.name}
           className={styles.resultCard}
           onClick={handleClickResult}
+          aria-hidden="true"
         >
-          <NavLink className={styles.title} to={`/card/${item.name}`}>
+          <NavLink
+            className={styles.title}
+            to={`/details/${item.name}?page=${currentPage}&index=${index + 1}`}
+          >
             <p>{item.name}</p>
           </NavLink>
         </div>

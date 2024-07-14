@@ -7,7 +7,6 @@ export const useLocalStorage = (
   const [value, setValue] = useState<string>(() => {
     const storedValue = localStorage.getItem(key);
     return storedValue ? JSON.parse(JSON.stringify(storedValue)) : initialValue;
-    //return initialValue;
   });
 
   useEffect(() => {

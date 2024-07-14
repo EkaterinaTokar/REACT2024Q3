@@ -1,56 +1,26 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import SearchBar from './SearchBar ';
-import SearchResults from './SearchResults';
+import SearchBar from './SearchBar/SearchBar ';
+import SearchResults from './SearchResults/SearchResults';
 import { SearchResult } from '../utils/interface';
 import { apiService } from '../api/api-service';
-import ErrorButton from './ErrButton';
+import ErrorButton from './Error/ErrButton';
 import styles from './MainPage.module.css';
 import { useLocalStorage } from './CustomHookLocalStorage';
-import { Outlet, useNavigate } from 'react-router-dom';
-
-// interface MainPageState {
-//   searchInput: string;
-//   loading: boolean;
-//   error: boolean;
-//   results: SearchResult[];
-//   next: string | null;
-//   previous: string | null;
-// }
-interface LoaderData {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: SearchResult[];
-}
-
-// export async function loader({ request }: LoaderFunctionArgs) {
-//   const url = new URL(request.url);
-//   const search = url.searchParams.get('search') || '';
-//   const results = await apiService(search, 1);
-//   console.log(results);
-//   return { results };
-// }
+import { Outlet, useNavigate, useSearchParams } from 'react-router-dom';
 
 const MainPage: React.FC = () => {
-  // const {
-  //   count,
-  //   next,
-  //   previous,
-  //   results: initialResults,
-  // } = useLoaderData() as LoaderData;
   const [searchInput, setSearchInput] = useLocalStorage('searchInput', '');
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
   const [results, setResults] = useState<SearchResult[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  //const [pageCount, setCount] = useState<number>(1);
-  const [totalCount, setTotalCount] = useState(0);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalCount, setTotalCount] = useState<number>(0);
   const nextPageRef = useRef<string | null>(null);
   const prevPageRef = useRef<string | null>(null);
   const [showDetails, setShowDetails] = useState<boolean>(false);
   const navigate = useNavigate();
   const currentURLRef = useRef<string | null>(null);
-  //const location = useLocation();
+  const [searchParams, setParams] = useSearchParams();
 
   const handleSearch = useCallback(
     async (query: string, pageUrl: string | null = null) => {
@@ -59,7 +29,6 @@ const MainPage: React.FC = () => {
       setLoading(true);
       setError(false);
       try {
-        console.log('pageUrl', pageUrl);
         const fetchedResults = await apiService(query, pageUrl);
         const results: SearchResult[] = fetchedResults.results.map(
           (item: SearchResult) => ({
@@ -70,20 +39,14 @@ const MainPage: React.FC = () => {
           }),
         );
 
-        //const count = fetchedResults.count;
         setTotalCount(fetchedResults.count);
-        console.log('fetchedResults next: ', fetchedResults.next);
-        console.log('fetchedResults previous: ', fetchedResults.previous);
         setSearchInput(query);
         setLoading(false);
         setResults(results);
-        currentURLRef.current = pageUrl
-          ? pageUrl
-          : `https://swapi.dev/api/planets/?search=t&page=2`;
+        currentURLRef.current =
+          pageUrl ?? `https://swapi.dev/api/planets/?search=t&page=2`;
         nextPageRef.current = fetchedResults.next;
         prevPageRef.current = fetchedResults.previous;
-        console.log(currentURLRef.current);
-        console.log(nextPageRef.current);
         if (nextPageRef.current === null && prevPageRef.current === null) {
           setCurrentPage(1);
         }
@@ -99,15 +62,17 @@ const MainPage: React.FC = () => {
   useEffect(() => {
     if (!searchInput) {
       handleSearch('');
-    } else {
-      handleSearch(searchInput);
+      navigate('/', { replace: true });
     }
-  }, [searchInput, handleSearch]);
+    handleSearch(searchInput);
+    navigate('/', { replace: true });
+  }, [searchInput, handleSearch, navigate]);
 
   const handleClickDetails = () => {
     if (showDetails) {
       setShowDetails(false);
-      navigate('/', { replace: true });
+      const page = searchParams.get('page');
+      navigate(`/?page=${page}`, { replace: true });
     }
   };
 
@@ -115,8 +80,10 @@ const MainPage: React.FC = () => {
     (page: number) => {
       setCurrentPage(page);
       handleSearch(searchInput, `https://swapi.dev/api/planets/?page=${page}`);
+      setParams({ page: page.toString() });
+      navigate(`?page=${page}`);
     },
-    [handleSearch, searchInput],
+    [handleSearch, searchInput, navigate, setParams],
   );
 
   const handlePageChangeNext = useCallback(() => {
@@ -134,20 +101,72 @@ const MainPage: React.FC = () => {
   }, [handleSearch, searchInput, currentPage]);
 
   const getPageNumbers = () => {
-    const maxPagesToShow = 5;
     const pages = [];
-    const startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
-    const endPage = Math.min(
-      Math.ceil(totalCount / 10),
-      startPage + maxPagesToShow - 1,
-    );
-
-    for (let i = startPage; i <= endPage; i++) {
+    const endPage = Math.ceil(totalCount / 10);
+    for (let i = 1; i <= endPage; i++) {
       pages.push(i);
     }
-
     return pages;
   };
+
+  const renderContent = () => (
+    <div
+      role="none"
+      className={styles.wrapperMain}
+      onClick={handleClickDetails}
+    >
+      <div className={styles.wrapperResults}>
+        <SearchResults
+          resultCards={results}
+          setShowDetails={setShowDetails}
+          currentPage={currentPage}
+        />
+        <div className={styles.pagination}>
+          <button
+            onClick={handlePageChangePrev}
+            disabled={!prevPageRef.current}
+          >
+            Previous
+          </button>
+          {getPageNumbers().map((page) => (
+            <button
+              key={page}
+              onClick={() => handlePageChange(page)}
+              disabled={
+                page === currentPage ||
+                nextPageRef.current === currentURLRef.current
+              }
+            >
+              {page}
+            </button>
+          ))}
+          <button
+            onClick={handlePageChangeNext}
+            disabled={
+              !nextPageRef.current ||
+              nextPageRef.current === currentURLRef.current
+            }
+          >
+            Next
+          </button>
+        </div>
+      </div>
+      {showDetails && (
+        <div className={styles.wrapperDetails}>
+          <Outlet />
+        </div>
+      )}
+    </div>
+  );
+  let content;
+
+  if (loading) {
+    content = <h4>Loading...</h4>;
+  } else if (error) {
+    content = <div>Error loading results</div>;
+  } else {
+    content = renderContent();
+  }
 
   return (
     <div className={styles.wrapper}>
@@ -155,56 +174,7 @@ const MainPage: React.FC = () => {
         <ErrorButton />
         <SearchBar updateSearch={handleSearch} />
       </header>
-      <main>
-        {loading ? (
-          <h4>Loading...</h4>
-        ) : error ? (
-          <div>Error loading results</div>
-        ) : (
-          <div className={styles.wrapperMain} onClick={handleClickDetails}>
-            <div className={styles.wrapperResults}>
-              <SearchResults
-                resultCards={results}
-                setShowDetails={setShowDetails}
-              />
-              <div className={styles.pagination}>
-                <button
-                  onClick={handlePageChangePrev}
-                  disabled={!prevPageRef.current}
-                >
-                  Previous
-                </button>
-                {getPageNumbers().map((page) => (
-                  <button
-                    key={page}
-                    onClick={() => handlePageChange(page)}
-                    disabled={
-                      page === currentPage ||
-                      nextPageRef.current === currentURLRef.current
-                    }
-                  >
-                    {page}
-                  </button>
-                ))}
-                <button
-                  onClick={handlePageChangeNext}
-                  disabled={
-                    !nextPageRef.current ||
-                    nextPageRef.current === currentURLRef.current
-                  }
-                >
-                  Next
-                </button>
-              </div>
-            </div>
-            {showDetails && (
-              <div className={styles.wrapperDetails}>
-                <Outlet />
-              </div>
-            )}
-          </div>
-        )}
-      </main>
+      <main>{content}</main>
     </div>
   );
 };

@@ -1,14 +1,11 @@
 import React, { ChangeEvent, FormEvent } from 'react';
 import styles from './SearchBar.module.css';
-import { useLocalStorage } from './CustomHookLocalStorage';
+import { useLocalStorage } from '../CustomHookLocalStorage';
 
 interface SearchBarProps {
   updateSearch: (inputValue: string) => void;
 }
 
-// interface SearchBarState {
-//   inputValue: string;
-// }
 const SearchBar: React.FC<SearchBarProps> = ({ updateSearch }) => {
   const [inputValue, setInputValue] = useLocalStorage('searchInput', '');
 
