@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import SearchBar from './SearchBar/SearchBar ';
 import SearchResults from './SearchResults/SearchResults';
 import { SearchResult } from '../utils/interface';
@@ -7,6 +13,7 @@ import ErrorButton from './Error/ErrButton';
 import styles from './MainPage.module.css';
 import { useLocalStorage } from './CustomHookLocalStorage';
 import { Outlet, useNavigate, useSearchParams } from 'react-router-dom';
+import { ThemeContext } from './Theme/ThemeContext';
 
 const MainPage: React.FC = () => {
   const [searchInput, setSearchInput] = useLocalStorage('searchInput', '');
@@ -21,6 +28,8 @@ const MainPage: React.FC = () => {
   const navigate = useNavigate();
   const currentURLRef = useRef<string | null>(null);
   const [searchParams, setParams] = useSearchParams();
+
+  const { theme } = useContext(ThemeContext);
 
   const handleSearch = useCallback(
     async (query: string, pageUrl: string | null = null) => {
@@ -112,7 +121,7 @@ const MainPage: React.FC = () => {
   const renderContent = () => (
     <div
       role="none"
-      className={styles.wrapperMain}
+      className={`${styles.wrapperMain} ${theme}`}
       onClick={handleClickDetails}
     >
       <div className={styles.wrapperResults}>
@@ -152,7 +161,7 @@ const MainPage: React.FC = () => {
         </div>
       </div>
       {showDetails && (
-        <div className={styles.wrapperDetails}>
+        <div className={`${styles.wrapperDetails} ${theme}`}>
           <Outlet />
         </div>
       )}
@@ -169,7 +178,7 @@ const MainPage: React.FC = () => {
   }
 
   return (
-    <div className={styles.wrapper}>
+    <div className={`${styles.wrapper} ${theme}`}>
       <header className={styles.wrapperHeader}>
         <ErrorButton />
         <SearchBar updateSearch={handleSearch} />

@@ -18,9 +18,20 @@
   height: 100vh;
 }
 .wrapperResults{
-  background-color: lightgrey;
+  /* background-color: lightgrey; */
   width:900px;
 }
 .pagination{
   margin: 60px 0 0 60px;
 }
+
+.light {
+  background-color: white;
+  color: black;
+}
+
+.dark {
+  background-color: black;
+  color: white;
+}
+
