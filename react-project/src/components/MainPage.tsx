@@ -2,13 +2,13 @@ import React, {
   useCallback,
   useContext,
   useEffect,
-  useRef,
+  //useRef,
   useState,
 } from 'react';
 import SearchBar from './SearchBar/SearchBar ';
 import SearchResults from './SearchResults/SearchResults';
-import { SearchResult } from '../utils/interface';
-import { apiService } from '../api/api-service';
+//import { SearchResult } from '../utils/interface';
+import { useGetPlanetsQuery } from '../api/api-service';
 import ErrorButton from './Error/ErrButton';
 import styles from './MainPage.module.css';
 import { useLocalStorage } from './CustomHookLocalStorage';
@@ -17,106 +17,135 @@ import { ThemeContext } from './Theme/ThemeContext';
 
 const MainPage: React.FC = () => {
   const [searchInput, setSearchInput] = useLocalStorage('searchInput', '');
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<boolean>(false);
-  const [results, setResults] = useState<SearchResult[]>([]);
+  // const [loading, setLoading] = useState<boolean>(false);
+  //const [error, setError] = useState<boolean>(false);
+  //const [results, setResults] = useState<SearchResult[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [totalCount, setTotalCount] = useState<number>(0);
-  const nextPageRef = useRef<string | null>(null);
-  const prevPageRef = useRef<string | null>(null);
+  //const [totalCount, setTotalCount] = useState<number>(0);
+  //const nextPageRef = useRef<string | null>(null);
+  //const prevPageRef = useRef<string | null>(null);
   const [showDetails, setShowDetails] = useState<boolean>(false);
   const navigate = useNavigate();
-  const currentURLRef = useRef<string | null>(null);
+  //const currentURLRef = useRef<string | null>(null);
   const [searchParams, setParams] = useSearchParams();
 
   const { theme } = useContext(ThemeContext);
 
-  const handleSearch = useCallback(
-    async (query: string, pageUrl: string | null = null) => {
-      localStorage.setItem('searchInput', query);
-      setSearchInput(query);
-      setLoading(true);
-      setError(false);
-      try {
-        const fetchedResults = await apiService(query, pageUrl);
-        const results: SearchResult[] = fetchedResults.results.map(
-          (item: SearchResult) => ({
-            name: item.name,
-            diameter: item.diameter,
-            climate: item.climate,
-            gravity: item.gravity,
-          }),
-        );
+  // const handleSearch = useCallback(
+  //   async (query: string, pageUrl: string | null = null) => {
+  //     localStorage.setItem('searchInput', query);
+  //     setSearchInput(query);
+  //     setLoading(true);
+  //     setError(false);
+  //     try {
+  //       //const fetchedResults = await apiService(query, pageUrl);
+  //       // const results: SearchResult[] = fetchedResults.results.map(
+  //       //   (item: SearchResult) => ({
+  //       //     name: item.name,
+  //       //     diameter: item.diameter,
+  //       //     climate: item.climate,
+  //       //     gravity: item.gravity,
+  //       //   }),
+  //       // );
 
-        setTotalCount(fetchedResults.count);
-        setSearchInput(query);
-        setLoading(false);
-        setResults(results);
-        currentURLRef.current =
-          pageUrl ?? `https://swapi.dev/api/planets/?search=t&page=2`;
-        nextPageRef.current = fetchedResults.next;
-        prevPageRef.current = fetchedResults.previous;
-        if (nextPageRef.current === null && prevPageRef.current === null) {
-          setCurrentPage(1);
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setLoading(false);
-        setError(true);
-      }
+  //       // setTotalCount(fetchedResults.count);
+  //       setSearchInput(query);
+  //       setLoading(false);
+  //       setResults(results);
+  //       currentURLRef.current =
+  //         pageUrl ?? `https://swapi.dev/api/planets/?search=t&page=2`;
+  //       nextPageRef.current = fetchedResults.next;
+  //       prevPageRef.current = fetchedResults.previous;
+  //       if (nextPageRef.current === null && prevPageRef.current === null) {
+  //         setCurrentPage(1);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching data:', error);
+  //       setLoading(false);
+  //       setError(true);
+  //     }
+  //   },
+  //   [setSearchInput, setError],
+  // );
+
+  const { data, error, isLoading } = useGetPlanetsQuery({
+    searchTerm: searchInput,
+    page: currentPage,
+    //pageUrl: `https://swapi.dev/api/planets/?page=${currentPage}`,
+  });
+
+  const handleSearch = useCallback(
+    (query: string) => {
+      console.log(query);
+      setSearchInput(query);
+      setCurrentPage(1);
+      setParams({ search: query, page: '1' });
     },
-    [setSearchInput, setError],
+    [setSearchInput, setParams],
   );
 
   useEffect(() => {
-    if (!searchInput) {
+    if (!searchInput && !showDetails) {
+      //setSearchInput('');
+      //setCurrentPage(1);
       handleSearch('');
-      navigate('/', { replace: true });
+      navigate(`/?page=${currentPage}`, { replace: true });
+      setParams({ search: '', page: '1' });
     }
-    handleSearch(searchInput);
-    navigate('/', { replace: true });
-  }, [searchInput, handleSearch, navigate]);
+    // } else {
+    //   //setSearchInput(searchInput);
+    //   //setParams({ search: searchInput });
+    //   //handleSearch(searchInput);
+    // handleSearch(searchInput);
+    //   navigate(`/?page=${currentPage}`, { replace: true });
+    // }
+    //setSearchInput(searchInput);
+    // handleSearch(searchInput);
+    //navigate(`/?page=${currentPage}`, { replace: true });
+    // navigate('/', { replace: true });
+  }, [searchInput, handleSearch, currentPage, setSearchInput, navigate]);
 
   const handleClickDetails = () => {
     if (showDetails) {
       setShowDetails(false);
       const page = searchParams.get('page');
       navigate(`/?page=${page}`, { replace: true });
+      setParams({ search: searchInput, page: '1' });
     }
   };
 
-  const handlePageChange = useCallback(
-    (page: number) => {
-      setCurrentPage(page);
-      handleSearch(searchInput, `https://swapi.dev/api/planets/?page=${page}`);
-      setParams({ page: page.toString() });
-      navigate(`?page=${page}`);
-    },
-    [handleSearch, searchInput, navigate, setParams],
-  );
+  // const handlePageChange = useCallback(
+  //   (page: number) => {
+  //     setCurrentPage(page);
+  //     // handleSearch(searchInput, `https://swapi.dev/api/planets/?page=${page}`);
+  //     setParams({ page: page.toString() });
+  //     navigate(`?page=${page}`);
+  //   },
+  //   [handleSearch, searchInput, navigate, setParams],
+  // );
 
-  const handlePageChangeNext = useCallback(() => {
-    if (nextPageRef.current) {
-      setCurrentPage(currentPage + 1);
-      handleSearch(searchInput, nextPageRef.current);
-    }
-  }, [handleSearch, searchInput, currentPage]);
+  // const handlePageChangeNext = useCallback(() => {
+  //   if (nextPageRef.current) {
+  //     setCurrentPage(currentPage + 1);
+  //     handleSearch(searchInput, nextPageRef.current);
+  //   }
+  // }, [handleSearch, searchInput, currentPage]);
 
-  const handlePageChangePrev = useCallback(() => {
-    if (prevPageRef.current) {
-      setCurrentPage(currentPage - 1);
-      handleSearch(searchInput, prevPageRef.current);
-    }
-  }, [handleSearch, searchInput, currentPage]);
+  // const handlePageChangePrev = useCallback(() => {
+  //   if (prevPageRef.current) {
+  //     setCurrentPage(currentPage - 1);
+  //     handleSearch(searchInput, prevPageRef.current);
+  //   }
+  // }, [handleSearch, searchInput, currentPage]);
 
-  const getPageNumbers = () => {
-    const pages = [];
-    const endPage = Math.ceil(totalCount / 10);
-    for (let i = 1; i <= endPage; i++) {
-      pages.push(i);
-    }
-    return pages;
-  };
+  // const getPageNumbers = () => {
+  //   const pages = [];
+  //   const endPage = Math.ceil(totalCount / 10);
+  //   for (let i = 1; i <= endPage; i++) {
+  //     pages.push(i);
+  //   }
+  //   return pages;
+  // };
 
   const renderContent = () => (
     <div
@@ -126,13 +155,13 @@ const MainPage: React.FC = () => {
     >
       <div className={styles.wrapperResults}>
         <SearchResults
-          resultCards={results}
+          resultCards={data?.results || []}
           setShowDetails={setShowDetails}
           currentPage={currentPage}
         />
-        <div className={styles.pagination}>
+        {/* <div className={styles.pagination}>
           <button
-            onClick={handlePageChangePrev}
+            // onClick={handlePageChangePrev}
             disabled={!prevPageRef.current}
           >
             Previous
@@ -150,7 +179,7 @@ const MainPage: React.FC = () => {
             </button>
           ))}
           <button
-            onClick={handlePageChangeNext}
+            // onClick={handlePageChangeNext}
             disabled={
               !nextPageRef.current ||
               nextPageRef.current === currentURLRef.current
@@ -158,7 +187,7 @@ const MainPage: React.FC = () => {
           >
             Next
           </button>
-        </div>
+        </div> */}
       </div>
       {showDetails && (
         <div className={`${styles.wrapperDetails} ${theme}`}>
@@ -169,7 +198,7 @@ const MainPage: React.FC = () => {
   );
   let content;
 
-  if (loading) {
+  if (isLoading) {
     content = <h4>Loading...</h4>;
   } else if (error) {
     content = <div>Error loading results</div>;

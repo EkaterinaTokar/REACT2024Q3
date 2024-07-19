@@ -1,7 +1,11 @@
 import { LoaderFunctionArgs } from 'react-router-dom';
-import { apiService } from '../../api/api-service';
 
 export async function loader({ params }: LoaderFunctionArgs) {
-  const response = await apiService(params.detailName ?? '');
-  return response.results[0];
+  const response = await fetch(
+    `https://swapi.dev/api/planets/?search=${params.detailName}`,
+  );
+  const data = await response.json();
+  console.log(data);
+  //const response = await apiService(params.detailName ?? '');
+  return data.results[0];
 }

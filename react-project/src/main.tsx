@@ -6,7 +6,8 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import ErrorPage from './components/Error/ErrorPage.tsx';
 import Details from './components/Details/Details.tsx';
 import { loader as cardLoader } from './components/Details/loader.tsx';
-import { ThemeProvider } from './components/Theme/ThemeContext.tsx';
+import { Provider } from 'react-redux';
+import { store } from './api/store.tsx';
 
 const router = createBrowserRouter([
   {
@@ -25,8 +26,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ThemeProvider>
+    <Provider store={store}>
       <RouterProvider router={router} />
-    </ThemeProvider>
+    </Provider>
   </React.StrictMode>,
 );

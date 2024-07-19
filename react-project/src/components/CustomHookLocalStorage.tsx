@@ -6,7 +6,7 @@ export const useLocalStorage = (
 ): [string, Dispatch<SetStateAction<string>>] => {
   const [value, setValue] = useState<string>(() => {
     const storedValue = localStorage.getItem(key);
-    return storedValue ? JSON.parse(JSON.stringify(storedValue)) : initialValue;
+    return storedValue ? JSON.parse(storedValue) : initialValue;
   });
 
   useEffect(() => {

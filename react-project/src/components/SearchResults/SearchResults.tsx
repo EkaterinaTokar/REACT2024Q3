@@ -32,9 +32,17 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         >
           <NavLink
             className={styles.title}
+            //to={`/details/${item.name}&index=${index + 1}`}
             to={`/details/${item.name}?page=${currentPage}&index=${index + 1}`}
           >
             <p>{item.name}</p>
+            <input
+              className="checkbox"
+              name="checkbox"
+              //checked={checked}
+              //onChange={handleUpdate}
+              type="checkbox"
+            />
           </NavLink>
         </div>
       ))}
