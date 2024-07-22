@@ -14,6 +14,8 @@ import styles from './MainPage.module.css';
 import { useLocalStorage } from './CustomHookLocalStorage';
 import { Outlet, useNavigate, useSearchParams } from 'react-router-dom';
 import { ThemeContext } from './Theme/ThemeContext';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../api/store';
 
 const MainPage: React.FC = () => {
   const [searchInput, setSearchInput] = useLocalStorage('searchInput', '');
@@ -31,52 +33,20 @@ const MainPage: React.FC = () => {
 
   const { theme } = useContext(ThemeContext);
 
-  // const handleSearch = useCallback(
-  //   async (query: string, pageUrl: string | null = null) => {
-  //     localStorage.setItem('searchInput', query);
-  //     setSearchInput(query);
-  //     setLoading(true);
-  //     setError(false);
-  //     try {
-  //       //const fetchedResults = await apiService(query, pageUrl);
-  //       // const results: SearchResult[] = fetchedResults.results.map(
-  //       //   (item: SearchResult) => ({
-  //       //     name: item.name,
-  //       //     diameter: item.diameter,
-  //       //     climate: item.climate,
-  //       //     gravity: item.gravity,
-  //       //   }),
-  //       // );
+  // const { data, isError, isLoading } = useGetPlanetsQuery({
+  //   searchTerm: searchInput,
+  //   page: currentPage,
+  // });
 
-  //       // setTotalCount(fetchedResults.count);
-  //       setSearchInput(query);
-  //       setLoading(false);
-  //       setResults(results);
-  //       currentURLRef.current =
-  //         pageUrl ?? `https://swapi.dev/api/planets/?search=t&page=2`;
-  //       nextPageRef.current = fetchedResults.next;
-  //       prevPageRef.current = fetchedResults.previous;
-  //       if (nextPageRef.current === null && prevPageRef.current === null) {
-  //         setCurrentPage(1);
-  //       }
-  //     } catch (error) {
-  //       console.error('Error fetching data:', error);
-  //       setLoading(false);
-  //       setError(true);
-  //     }
-  //   },
-  //   [setSearchInput, setError],
-  // );
-
-  const { data, error, isLoading } = useGetPlanetsQuery({
+  const { data, isError, isLoading } = useGetPlanetsQuery({
     searchTerm: searchInput,
-    page: currentPage,
-    //pageUrl: `https://swapi.dev/api/planets/?page=${currentPage}`,
   });
+  console.log(data);
+  const dispatch = useDispatch<AppDispatch>();
 
   const handleSearch = useCallback(
     (query: string) => {
-      console.log(query);
+      // console.log(query);
       setSearchInput(query);
       setCurrentPage(1);
       setParams({ search: query, page: '1' });
@@ -89,9 +59,14 @@ const MainPage: React.FC = () => {
       //setSearchInput('');
       //setCurrentPage(1);
       handleSearch('');
+      console.log('searchInput: ', '');
       navigate(`/?page=${currentPage}`, { replace: true });
       setParams({ search: '', page: '1' });
     }
+    // handleSearch(searchInput);
+    // console.log('searchInput: ', searchInput);
+    // navigate(`/?page=${currentPage}`, { replace: true });
+    // setParams({ search: '', page: '1' });
     // } else {
     //   //setSearchInput(searchInput);
     //   //setParams({ search: searchInput });
@@ -103,7 +78,14 @@ const MainPage: React.FC = () => {
     // handleSearch(searchInput);
     //navigate(`/?page=${currentPage}`, { replace: true });
     // navigate('/', { replace: true });
-  }, [searchInput, handleSearch, currentPage, setSearchInput, navigate]);
+  }, [
+    searchInput,
+    handleSearch,
+    currentPage,
+    dispatch,
+    setSearchInput,
+    navigate,
+  ]);
 
   const handleClickDetails = () => {
     if (showDetails) {
@@ -200,7 +182,7 @@ const MainPage: React.FC = () => {
 
   if (isLoading) {
     content = <h4>Loading...</h4>;
-  } else if (error) {
+  } else if (isError) {
     content = <div>Error loading results</div>;
   } else {
     content = renderContent();

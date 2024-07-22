@@ -8,26 +8,39 @@ export interface SearchResponse {
   results: SearchResult[];
 }
 
+// export const apiService = createApi({
+//   reducerPath: 'apiService',
+//   baseQuery: fetchBaseQuery({ baseUrl: 'https://swapi.dev/api/' }),
+//   endpoints: (builder) => ({
+//     getPlanets: builder.query<
+//       SearchResponse,
+//       { searchTerm?: string; page?: number }
+//     >({
+//       query: ({ searchTerm, page = 1 }) => {
+//         if (searchTerm && searchTerm.trim() !== '') {
+//           return `planets/?search=${searchTerm}`;
+//         }
+//         return `planets/?page=${page}`;
+//       },
+//     }),
+//   }),
+// });
+
 export const apiService = createApi({
   reducerPath: 'apiService',
   baseQuery: fetchBaseQuery({ baseUrl: 'https://swapi.dev/api/' }),
-  endpoints: (builder) => ({
-    getPlanets: builder.query<
+  endpoints: (build) => ({
+    getPlanets: build.query<
       SearchResponse,
-      { searchTerm?: string; page?: number /*pageUrl?: string */ }
+      { searchTerm: string } /*; page?: number */
     >({
-      query: ({ searchTerm, page = 1 /*pageUrl*/ }) => {
-        // if (pageUrl) {
-        //   return pageUrl;
-        // }
-        if (searchTerm && searchTerm.trim() !== '') {
-          //localStorage.setItem('searchInput', searchTerm);
-
-          return `planets/?search=${searchTerm}`;
-        }
-        //localStorage.setItem('searchInput', '');
-        return `planets/?page=${page}`;
-      },
+      query: ({ searchTerm } /*, page = 1 */) => ({
+        url: `planets/`,
+        params: {
+          search: searchTerm,
+        },
+      }),
+      // transformResponse: (response: SearchResponse<SearchResult>)
     }),
   }),
 });
