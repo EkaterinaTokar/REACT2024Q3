@@ -27,7 +27,7 @@ const Details: FC = () => {
 
   const handleClose = () => {
     const page = searchParams.get('page');
-    navigate(`/?page=${page}`, { replace: true });
+    navigate(`/?search=&page=${page}`, { replace: true });
   };
   const handleCardClick: MouseEventHandler<HTMLDivElement> = (event) => {
     event.stopPropagation();

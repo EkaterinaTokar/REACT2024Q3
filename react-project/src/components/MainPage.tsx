@@ -10,10 +10,10 @@ import { ThemeContext } from './Theme/ThemeContext';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../api/store';
 import Flyout from './SearchResults/Flyout';
+import { apiActions } from '../api/api.slice';
 
 const MainPage: React.FC = () => {
   const [searchInput, setSearchInput] = useLocalStorage('searchInput', '');
-  //const [results, setResults] = useState<SearchResult[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalCount, setTotalCount] = useState<number>(0);
   const [showDetails, setShowDetails] = useState<boolean>(false);
@@ -28,6 +28,10 @@ const MainPage: React.FC = () => {
   });
   const dispatch = useDispatch<AppDispatch>();
 
+  const currentPageData = useSelector(
+    (state: RootState) => state.api.currentPageData,
+  );
+
   const selectedItems = useSelector(
     (state: RootState) => state.api.SelectedItems,
   );
@@ -36,7 +40,8 @@ const MainPage: React.FC = () => {
   const handleSearch = useCallback(
     (query: string, page?: number) => {
       setSearchInput(query);
-      console.log('currentPage', currentPage);
+      page = page ? page : currentPage;
+      console.log('page', page);
       setParams({ search: query, page: `${page}` });
     },
     [setSearchInput, setParams, currentPage],
@@ -45,30 +50,18 @@ const MainPage: React.FC = () => {
   useEffect(() => {
     if (data) {
       setTotalCount(data.count);
+      dispatch(apiActions.setCurrentPageData(data.results));
     }
     if (!searchInput && !showDetails) {
-      //setSearchInput('');
-      //setCurrentPage(1);
       handleSearch('');
-      console.log('searchInput: ', '');
       navigate(`/?page=${currentPage}`, { replace: true });
       setParams({ search: '', page: `${currentPage}` });
     }
-    // handleSearch(searchInput);
-    // console.log('searchInput: ', searchInput);
-    // navigate(`/?page=${currentPage}`, { replace: true });
-    // setParams({ search: '', page: '1' });
-    // } else {
-    //   //setSearchInput(searchInput);
-    //   //setParams({ search: searchInput });
-    //   //handleSearch(searchInput);
-    // handleSearch(searchInput);
-    //   navigate(`/?page=${currentPage}`, { replace: true });
-    // }
-    //setSearchInput(searchInput);
-    // handleSearch(searchInput);
-    //navigate(`/?page=${currentPage}`, { replace: true });
-    // navigate('/', { replace: true });
+    if (searchInput) {
+      handleSearch(searchInput);
+      navigate(`/?page=${currentPage}`, { replace: true });
+      setParams({ search: searchInput, page: `${currentPage}` });
+    }
   }, [
     data,
     searchInput,
@@ -126,7 +119,7 @@ const MainPage: React.FC = () => {
     >
       <div className={styles.wrapperResults}>
         <SearchResults
-          resultCards={data?.results || []}
+          resultCards={currentPageData}
           setShowDetails={setShowDetails}
           currentPage={currentPage}
         />

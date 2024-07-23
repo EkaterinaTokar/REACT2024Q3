@@ -3,10 +3,14 @@ import { SearchResult } from '../utils/interface';
 
 export interface SelectedItemState {
   SelectedItems: SearchResult[];
+  currentPageData: SearchResult[];
 }
 
 const initialState: SelectedItemState = {
   SelectedItems: JSON.parse(localStorage.getItem('SelectedItemKey') ?? '[]'),
+  currentPageData: JSON.parse(
+    localStorage.getItem('CurrentPageDataKey') ?? '[]',
+  ),
 };
 export const apiSlice = createSlice({
   name: 'api',
@@ -33,6 +37,13 @@ export const apiSlice = createSlice({
       localStorage.setItem(
         'SelectedItemKey',
         JSON.stringify(state.SelectedItems),
+      );
+    },
+    setCurrentPageData(state, action: PayloadAction<SearchResult[]>) {
+      state.currentPageData = action.payload;
+      localStorage.setItem(
+        'CurrentPageDataKey',
+        JSON.stringify(state.currentPageData),
       );
     },
   },

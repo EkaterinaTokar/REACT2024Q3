@@ -8,24 +8,6 @@ export interface SearchResponse {
   results: SearchResult[];
 }
 
-// export const apiService = createApi({
-//   reducerPath: 'apiService',
-//   baseQuery: fetchBaseQuery({ baseUrl: 'https://swapi.dev/api/' }),
-//   endpoints: (builder) => ({
-//     getPlanets: builder.query<
-//       SearchResponse,
-//       { searchTerm?: string; page?: number }
-//     >({
-//       query: ({ searchTerm, page = 1 }) => {
-//         if (searchTerm && searchTerm.trim() !== '') {
-//           return `planets/?search=${searchTerm}`;
-//         }
-//         return `planets/?page=${page}`;
-//       },
-//     }),
-//   }),
-// });
-
 export const apiService = createApi({
   reducerPath: 'apiService',
   baseQuery: fetchBaseQuery({ baseUrl: 'https://swapi.dev/api/' }),
