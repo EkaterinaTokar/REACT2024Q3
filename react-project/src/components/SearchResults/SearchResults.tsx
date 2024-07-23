@@ -31,16 +31,21 @@ const SearchResults: React.FC<SearchResultsProps> = ({
 
   const handleCheckboxChange = (
     event: React.ChangeEvent<HTMLInputElement>,
-    name: string,
+    item: SearchResult,
   ) => {
     event.stopPropagation();
     if (event.target.checked) {
-      dispatch(apiActions.addSelectedItem(name));
+      dispatch(apiActions.addSelectedItem(item));
       setShowDetails(false);
     } else {
-      dispatch(apiActions.removeSelectedItem(name));
+      dispatch(apiActions.removeSelectedItem(item.name));
       setShowDetails(false);
     }
+  };
+  const isChecked = (item: SearchResult) => {
+    return selectedItems.some(
+      (selectedItem) => selectedItem.name === item.name,
+    );
   };
 
   return (
@@ -54,15 +59,14 @@ const SearchResults: React.FC<SearchResultsProps> = ({
         >
           <NavLink
             className={styles.title}
-            //to={`/details/${item.name}&index=${index + 1}`}
             to={`/details/${item.name}?page=${currentPage}&index=${index + 1}`}
           >
             <p>{item.name}</p>
             <input
               className="checkbox"
               name="checkbox"
-              checked={selectedItems.includes(item.name)}
-              onChange={(event) => handleCheckboxChange(event, item.name)}
+              checked={isChecked(item)}
+              onChange={(event) => handleCheckboxChange(event, item)}
               type="checkbox"
             />
           </NavLink>

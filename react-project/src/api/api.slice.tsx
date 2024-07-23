@@ -1,25 +1,39 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { SearchResult } from '../utils/interface';
 
 export interface SelectedItemState {
-  SelectedItems: string[];
+  SelectedItems: SearchResult[];
 }
 
 const initialState: SelectedItemState = {
-  SelectedItems: JSON.parse(localStorage.getItem('favoriteKey') ?? '[]'),
+  SelectedItems: JSON.parse(localStorage.getItem('SelectedItemKey') ?? '[]'),
 };
 export const apiSlice = createSlice({
   name: 'api',
   initialState,
   reducers: {
-    addSelectedItem(state, action: PayloadAction<string>) {
+    addSelectedItem(state, action: PayloadAction<SearchResult>) {
       state.SelectedItems.push(action.payload);
-      localStorage.setItem('favoriteKey', JSON.stringify(state.SelectedItems));
+      localStorage.setItem(
+        'SelectedItemKey',
+        JSON.stringify(state.SelectedItems),
+      );
     },
     removeSelectedItem(state, action: PayloadAction<string>) {
       state.SelectedItems = state.SelectedItems.filter(
-        (item) => item !== action.payload,
+        (item) => item.name !== action.payload,
       );
-      localStorage.setItem('favoriteKey', JSON.stringify(state.SelectedItems));
+      localStorage.setItem(
+        'SelectedItemKey',
+        JSON.stringify(state.SelectedItems),
+      );
+    },
+    removeAllItems(state) {
+      state.SelectedItems = [];
+      localStorage.setItem(
+        'SelectedItemKey',
+        JSON.stringify(state.SelectedItems),
+      );
     },
   },
 });
