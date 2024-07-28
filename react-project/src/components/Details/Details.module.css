@@ -1,0 +1,8 @@
+.details{
+    width:400px;
+    height: 50vh;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid white;
+    background-color: rgb(203, 219, 234);
+}
