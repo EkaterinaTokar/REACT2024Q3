@@ -1,0 +1,16 @@
+.selectedItems{
+    margin: 30px 0 0 0;
+    padding: 10px;
+    background-color: cadetblue;
+    border-radius: 20px;
+}
+.button{
+  margin: 0 5px;
+}
+.text{
+font-size: 20px;
+}
+.count{
+ font-weight: bold;
+ font-size: 20px;
+}

@@ -4,7 +4,7 @@
   justify-content: flex-start;
   align-items: center;
   width: 100%;
-  max-width: 1400px;
+  max-width: 1400px; 
   height: 100vh;
 }
 .wrapperHeader {
@@ -15,10 +15,8 @@
 .wrapperMain{
   display: flex;
   gap: 20px;
-  height: 100vh;
 }
 .wrapperResults{
-  /* background-color: lightgrey; */
   width:900px;
 }
 .pagination{

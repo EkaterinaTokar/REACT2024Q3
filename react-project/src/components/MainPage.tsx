@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../api/store';
 import Flyout from './SearchResults/Flyout';
 import { apiActions } from '../api/api.slice';
+import ButtonTheme from './Theme/ButtonTheme';
 
 const MainPage: React.FC = () => {
   const [searchInput, setSearchInput] = useLocalStorage('searchInput', '');
@@ -35,13 +36,11 @@ const MainPage: React.FC = () => {
   const selectedItems = useSelector(
     (state: RootState) => state.api.SelectedItems,
   );
-  console.log('selectedItems', selectedItems);
 
   const handleSearch = useCallback(
     (query: string, page?: number) => {
       setSearchInput(query);
       page = page ? page : currentPage;
-      console.log('page', page);
       setParams({ search: query, page: `${page}` });
     },
     [setSearchInput, setParams, currentPage],
@@ -123,7 +122,6 @@ const MainPage: React.FC = () => {
           setShowDetails={setShowDetails}
           currentPage={currentPage}
         />
-        {selectedItems.length > 0 && <Flyout selectedItems={selectedItems} />}
         {
           <div className={styles.pagination}>
             <button
@@ -149,6 +147,7 @@ const MainPage: React.FC = () => {
             </button>
           </div>
         }
+        {selectedItems.length > 0 && <Flyout selectedItems={selectedItems} />}
       </div>
       {showDetails && (
         <div className={`${styles.wrapperDetails} ${theme}`}>
@@ -171,6 +170,7 @@ const MainPage: React.FC = () => {
     <div className={`${styles.wrapper} ${theme}`}>
       <header className={styles.wrapperHeader}>
         <ErrorButton />
+        <ButtonTheme />
         <SearchBar updateSearch={handleSearch} />
       </header>
       <main>{content}</main>

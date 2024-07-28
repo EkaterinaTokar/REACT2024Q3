@@ -6,7 +6,7 @@ export interface SelectedItemState {
   currentPageData: SearchResult[];
 }
 
-const initialState: SelectedItemState = {
+export const initialState: SelectedItemState = {
   SelectedItems: JSON.parse(localStorage.getItem('SelectedItemKey') ?? '[]'),
   currentPageData: JSON.parse(
     localStorage.getItem('CurrentPageDataKey') ?? '[]',

@@ -1,5 +1,6 @@
 import { FC, useContext } from 'react';
 import { ThemeContext } from './ThemeContext';
+import styles from '../Theme/ButtonTheme.module.css';
 
 const ButtonTheme: FC = () => {
   const context = useContext(ThemeContext);
@@ -11,7 +12,7 @@ const ButtonTheme: FC = () => {
   const { theme, toggleTheme } = context;
 
   return (
-    <button onClick={toggleTheme}>
+    <button className={styles.button} onClick={toggleTheme}>
       {theme === 'light' ? 'dark' : 'light'}
     </button>
   );

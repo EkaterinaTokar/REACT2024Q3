@@ -65,6 +65,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
             <input
               className="checkbox"
               name="checkbox"
+              aria-label={item.name}
               checked={isChecked(item)}
               onChange={(event) => handleCheckboxChange(event, item)}
               type="checkbox"

@@ -3,15 +3,7 @@ import { FC, MouseEventHandler, useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useLazyGetDataDetailsQuery } from '../../api/api-service';
 
-// interface Card {
-//   name: string;
-//   climate: string;
-//   gravity: string;
-//   diameter: string;
-// }
-
 const Details: FC = () => {
-  // const cardData = useLoaderData() as Card;
   const [fetchDetails, { isLoading, isError, data: cardData }] =
     useLazyGetDataDetailsQuery();
   const navigate = useNavigate();
@@ -21,7 +13,6 @@ const Details: FC = () => {
   useEffect(() => {
     if (detailName) {
       fetchDetails({ detailName });
-      console.log('fetchDetails', cardData?.results[0]);
     }
   }, [detailName, fetchDetails]);
 
@@ -38,7 +29,7 @@ const Details: FC = () => {
   }
 
   if (isError) {
-    return <div>Error loading details.</div>;
+    return <div>Error loading details</div>;
   }
 
   return (
