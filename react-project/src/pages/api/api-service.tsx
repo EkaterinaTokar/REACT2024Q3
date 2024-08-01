@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { SearchResult } from '../utils/interface';
+import { SearchResult } from '../../components/utils/interface';
 
 export interface SearchResponse {
   count: number;

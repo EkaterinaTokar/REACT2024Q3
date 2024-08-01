@@ -20,6 +20,10 @@
   margin-bottom: 10px;
   color: #007bff;
 }
+.ItemName{
+  color: blue;
+  cursor: pointer;
+}
 
 .description {
   font-size: 14px;

@@ -1,25 +1,31 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
-import SearchBar from './SearchBar/SearchBar ';
-import SearchResults from './SearchResults/SearchResults';
-import { useGetPlanetsQuery } from '../api/api-service';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import ErrorButton from './Error/ErrButton';
 import styles from './MainPage.module.css';
-import { useLocalStorage } from './CustomHookLocalStorage';
-import { Outlet, useNavigate, useSearchParams } from 'react-router-dom';
+//import { Outlet /*, useSearchParams */ } from 'react-router-dom';
 import { ThemeContext } from './Theme/ThemeContext';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../api/store';
-import Flyout from './SearchResults/Flyout';
-import { apiActions } from '../api/api.slice';
 import ButtonTheme from './Theme/ButtonTheme';
+import { useGetPlanetsQuery } from '../pages/api/api-service';
+import { AppDispatch, RootState } from '../pages/api/store';
+import { apiActions } from '../pages/api/api.slice';
+import { useLocalStorage } from './CustomHookLocalStorage';
+import SearchResults from './SearchResults/SearchResults';
+import Flyout from './SearchResults/Flyout';
+import SearchBar from './searchBar/SearchBar ';
+import Details from '../pages/details/[detailName]';
+import { SearchResult } from './utils/interface';
+//import { SearchResult } from '../../utils/interface';
+import { useRouter } from 'next/navigation';
 
-const MainPage: React.FC = () => {
+const MainPage = () => {
   const [searchInput, setSearchInput] = useLocalStorage('searchInput', '');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalCount, setTotalCount] = useState<number>(0);
   const [showDetails, setShowDetails] = useState<boolean>(false);
-  const navigate = useNavigate();
-  const [searchParams, setParams] = useSearchParams();
+  const [selectedItem, setSelectedItem] = useState<SearchResult | null>(null);
+  // const navigate = useNavigate();
+  const router = useRouter();
+  //const [, /*searchParams*/ setParams] = useSearchParams();
 
   const { theme } = useContext(ThemeContext);
 
@@ -41,11 +47,12 @@ const MainPage: React.FC = () => {
     (query: string, page?: number) => {
       setSearchInput(query);
       page = page ? page : currentPage;
-      setParams({ search: query, page: `${page}` });
+      const params = new URLSearchParams({ search: query, page: `${page}` });
+      router.push(`/?${params.toString()}`);
+      //setParams({ search: query, page: `${page}` });
     },
-    [setSearchInput, setParams, currentPage],
+    [setSearchInput, /*setParams,*/ currentPage],
   );
-
   useEffect(() => {
     if (data) {
       setTotalCount(data.count);
@@ -53,13 +60,23 @@ const MainPage: React.FC = () => {
     }
     if (!searchInput && !showDetails) {
       handleSearch('');
-      navigate(`/?page=${currentPage}`, { replace: true });
-      setParams({ search: '', page: `${currentPage}` });
+      const params = new URLSearchParams({
+        search: '',
+        page: `${currentPage}`,
+      });
+      router.push(`/?${params.toString()}`);
+      //navigate(`/?page=${currentPage}`, { replace: true });
+      //setParams({ search: '', page: `${currentPage}` });
     }
     if (searchInput) {
       handleSearch(searchInput);
-      navigate(`/?page=${currentPage}`, { replace: true });
-      setParams({ search: searchInput, page: `${currentPage}` });
+      const params = new URLSearchParams({
+        search: searchInput,
+        page: `${currentPage}`,
+      });
+      router.push(`/?${params.toString()}`);
+      //navigate(`/?page=${currentPage}`, { replace: true });
+      //setParams({ search: searchInput, page: `${currentPage}` });
     }
   }, [
     data,
@@ -69,17 +86,23 @@ const MainPage: React.FC = () => {
     dispatch,
     setTotalCount,
     setSearchInput,
-    navigate,
-    setParams,
+    router,
+    // navigate,
+    //setParams,
     showDetails,
   ]);
 
   const handleClickDetails = () => {
     if (showDetails) {
       setShowDetails(false);
-      const page = searchParams.get('page');
-      navigate(`/?page=${page}`, { replace: true });
-      setParams({ search: searchInput, page: '1' });
+      const params = new URLSearchParams({
+        search: searchInput,
+        page: `${1}`,
+      });
+      router.push(`/?${params.toString()}`);
+      //const page = searchParams.get('page');
+      //navigate(`/?page=${page}`, { replace: true });
+      //setParams({ search: searchInput, page: '1' });
     }
   };
 
@@ -120,6 +143,7 @@ const MainPage: React.FC = () => {
         <SearchResults
           resultCards={currentPageData}
           setShowDetails={setShowDetails}
+          onSelectItem={setSelectedItem}
           currentPage={currentPage}
         />
         {
@@ -151,13 +175,14 @@ const MainPage: React.FC = () => {
       </div>
       {showDetails && (
         <div className={`${styles.wrapperDetails} ${theme}`}>
-          <Outlet />
+          {/* <Outlet /> */}
+          <Details setShowDetails={setShowDetails} item={selectedItem!} />
         </div>
       )}
     </div>
   );
-  let content;
 
+  let content;
   if (isLoading) {
     content = <h4>Loading...</h4>;
   } else if (isError) {
@@ -165,7 +190,6 @@ const MainPage: React.FC = () => {
   } else {
     content = renderContent();
   }
-
   return (
     <div className={`${styles.wrapper} ${theme}`}>
       <header className={styles.wrapperHeader}>

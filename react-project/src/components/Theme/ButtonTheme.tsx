@@ -1,6 +1,6 @@
 import { FC, useContext } from 'react';
 import { ThemeContext } from './ThemeContext';
-import styles from '../Theme/ButtonTheme.module.css';
+import styles from './ButtonTheme.module.css';
 
 const ButtonTheme: FC = () => {
   const context = useContext(ThemeContext);

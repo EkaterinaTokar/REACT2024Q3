@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { SearchResult } from '../utils/interface';
+import { SearchResult } from '../../components/utils/interface';
 
 export interface SelectedItemState {
   SelectedItems: SearchResult[];
@@ -7,10 +7,14 @@ export interface SelectedItemState {
 }
 
 export const initialState: SelectedItemState = {
-  SelectedItems: JSON.parse(localStorage.getItem('SelectedItemKey') ?? '[]'),
-  currentPageData: JSON.parse(
-    localStorage.getItem('CurrentPageDataKey') ?? '[]',
-  ),
+  SelectedItems:
+    typeof window !== 'undefined'
+      ? JSON.parse(localStorage.getItem('SelectedItemKey') ?? '[]')
+      : '[]',
+  currentPageData:
+    typeof window !== 'undefined'
+      ? JSON.parse(localStorage.getItem('CurrentPageDataKey') ?? '[]')
+      : '[]',
 };
 export const apiSlice = createSlice({
   name: 'api',

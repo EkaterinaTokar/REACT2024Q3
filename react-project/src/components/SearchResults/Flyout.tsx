@@ -1,10 +1,10 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { apiActions } from '../../api/api.slice';
-import { AppDispatch } from '../../api/store';
-import { SearchResult } from '../../utils/interface';
 import { saveAs } from 'file-saver';
-import styles from '../SearchResults/Flyout.module.css';
+import styles from './Flyout.module.css';
+import { SearchResult } from '../utils/interface';
+import { AppDispatch } from '../../pages/api/store';
+import { apiActions } from '../../pages/api/api.slice';
 
 interface FlyoutProps {
   selectedItems: SearchResult[];

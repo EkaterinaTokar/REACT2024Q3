@@ -3,9 +3,9 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Provider } from 'react-redux';
+import { store } from '../pages/api/store';
+import { useGetPlanetsQuery } from '../pages/api/api-service';
 import MainPage from '../components/MainPage';
-import { useGetPlanetsQuery } from '../api/api-service';
-import { store } from '../api/store';
 
 jest.mock('../api/api-service', () => ({
   ...jest.requireActual('../api/api-service'),

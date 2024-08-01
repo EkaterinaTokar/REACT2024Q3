@@ -5,12 +5,16 @@ export const useLocalStorage = (
   initialValue: string,
 ): [string, Dispatch<SetStateAction<string>>] => {
   const [value, setValue] = useState<string>(() => {
-    const storedValue = localStorage.getItem(key);
-    return storedValue ? JSON.parse(storedValue) : initialValue;
+    if (typeof window === 'undefined') {
+      return initialValue;
+    } else {
+      const storedValue = localStorage.getItem(key);
+      return storedValue ? JSON.parse(storedValue) : initialValue;
+    }
   });
 
   useEffect(() => {
-    if (value === undefined) return;
+    if (value === undefined && typeof window === 'undefined') return;
     localStorage.setItem(key, JSON.stringify(value));
   }, [key, value]);
 
