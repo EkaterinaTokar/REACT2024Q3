@@ -4,11 +4,15 @@
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "target": "ES2020",
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable",
+      "esnext"
+    ],
     "module": "ESNext",
     "skipLibCheck": true,
     "esModuleInterop": true,
-
     /* Bundler mode */
     "moduleResolution": "Node",
     //"moduleResolution": "bundler",
@@ -17,22 +21,35 @@
     "isolatedModules": true,
     //"moduleDetection": "force",
     "noEmit": true,
-    // "jsx": "react-jsx",
+    //"jsx": "preserve",
     "jsx": "preserve",
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
     "incremental": true,
-     "types": ["jest", "@testing-library/jest-dom"],
-      "plugins": [{ "name": "next" }],
-
+    "types": [
+      "jest",
+      "@testing-library/jest-dom"
+    ],
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "baseUrl": "./",
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src/**/*", "./dist/types/**/*.ts", "./next-env.d.ts"],
-  "exclude": ["./node_modules"],
+  "include": [
+    "src/**/*",
+    "./dist/types/**/*.ts",
+    "./next-env.d.ts"
+  ],
+  "exclude": [
+    "./node_modules"
+  ]
   // "references": [
   //   {
   //     "path": "./tsconfig.node.json"

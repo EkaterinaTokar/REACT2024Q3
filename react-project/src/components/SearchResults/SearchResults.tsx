@@ -1,12 +1,9 @@
 import React from 'react';
 import styles from './SearchResults.module.css';
-//import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
 import { SearchResult } from '../utils/interface';
 import { AppDispatch, RootState } from '../../pages/api/store';
 import { apiActions } from '../../pages/api/api.slice';
-import { useRouter } from 'next/router';
-//import { NavLink } from 'react-router-dom';
 
 interface SearchResultsProps {
   resultCards: SearchResult[];
@@ -19,13 +16,11 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   resultCards,
   setShowDetails,
   onSelectItem,
-  currentPage,
 }) => {
   const dispatch = useDispatch<AppDispatch>();
   const selectedItems = useSelector(
     (state: RootState) => state.api.SelectedItems,
   );
-  const router = useRouter();
 
   const handleClickResult = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
@@ -34,11 +29,6 @@ const SearchResults: React.FC<SearchResultsProps> = ({
     event.stopPropagation();
     setShowDetails(true);
     onSelectItem(item);
-    const params = new URLSearchParams({
-      search: item.name,
-      page: `${currentPage}`,
-    });
-    router.push(`/?${params.toString()}`);
   };
 
   const handleCheckboxChange = (
@@ -62,17 +52,13 @@ const SearchResults: React.FC<SearchResultsProps> = ({
 
   return (
     <div className={styles.searchResults}>
-      {resultCards.map((item /*, index*/) => (
+      {resultCards.map((item) => (
         <div
           key={item.name}
           className={styles.resultCard}
           onClick={(event) => handleClickResult(event, item)}
           aria-hidden="true"
         >
-          {/* <NavLink
-            className={styles.title}
-            to={`/details/${item.name}?page=${currentPage}&index=${index + 1}`}
-          > */}
           <p className={styles.ItemName}>{item.name}</p>
           <input
             className="checkbox"
@@ -82,7 +68,6 @@ const SearchResults: React.FC<SearchResultsProps> = ({
             onChange={(event) => handleCheckboxChange(event, item)}
             type="checkbox"
           />
-          {/* </NavLink> */}
         </div>
       ))}
     </div>

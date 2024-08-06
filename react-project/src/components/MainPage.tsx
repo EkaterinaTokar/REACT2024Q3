@@ -1,39 +1,35 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 import ErrorButton from './Error/ErrButton';
 import styles from './MainPage.module.css';
-//import { Outlet /*, useSearchParams */ } from 'react-router-dom';
+import React from 'react';
 import { ThemeContext } from './Theme/ThemeContext';
 import { useDispatch, useSelector } from 'react-redux';
 import ButtonTheme from './Theme/ButtonTheme';
-import { useGetPlanetsQuery } from '../pages/api/api-service';
+import { SearchResponse } from '../pages/api/api-service';
 import { AppDispatch, RootState } from '../pages/api/store';
 import { apiActions } from '../pages/api/api.slice';
 import { useLocalStorage } from './CustomHookLocalStorage';
 import SearchResults from './SearchResults/SearchResults';
-import Flyout from './SearchResults/Flyout';
-import SearchBar from './searchBar/SearchBar ';
-import Details from '../pages/details/[detailName]';
+import Flyout from '../components/SearchResults/Flyout';
 import { SearchResult } from './utils/interface';
-//import { SearchResult } from '../../utils/interface';
 import { useRouter } from 'next/navigation';
+import SearchBar from './SearchBar/SearchBar ';
+import Details from '../pages/details/[detailName]';
 
-const MainPage = () => {
+interface MainPageProps {
+  data: SearchResponse;
+}
+
+const MainPage: React.FC<MainPageProps> = ({ data }) => {
   const [searchInput, setSearchInput] = useLocalStorage('searchInput', '');
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalCount, setTotalCount] = useState<number>(0);
   const [showDetails, setShowDetails] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<SearchResult | null>(null);
-  // const navigate = useNavigate();
   const router = useRouter();
-  //const [, /*searchParams*/ setParams] = useSearchParams();
-
   const { theme } = useContext(ThemeContext);
-
-  const { data, isError, isLoading } = useGetPlanetsQuery({
-    searchTerm: searchInput,
-    page: currentPage,
-  });
   const dispatch = useDispatch<AppDispatch>();
+  const [isClient, setIsClient] = useState(false);
 
   const currentPageData = useSelector(
     (state: RootState) => state.api.currentPageData,
@@ -46,37 +42,29 @@ const MainPage = () => {
   const handleSearch = useCallback(
     (query: string, page?: number) => {
       setSearchInput(query);
-      page = page ? page : currentPage;
-      const params = new URLSearchParams({ search: query, page: `${page}` });
-      router.push(`/?${params.toString()}`);
-      //setParams({ search: query, page: `${page}` });
+      const currentSearchParams = new URLSearchParams(window.location.search);
+      const currentQuery = currentSearchParams.get('search') || '';
+      const currentPage = currentSearchParams.get('page') || '1';
+      if (currentQuery !== query || currentPage !== `${page}`) {
+        router.push(
+          `/?search=${encodeURIComponent(query)}&page=${page}`,
+          undefined,
+        );
+      }
     },
-    [setSearchInput, /*setParams,*/ currentPage],
+    [setSearchInput, router],
   );
   useEffect(() => {
+    setIsClient(true);
     if (data) {
       setTotalCount(data.count);
       dispatch(apiActions.setCurrentPageData(data.results));
     }
     if (!searchInput && !showDetails) {
-      handleSearch('');
-      const params = new URLSearchParams({
-        search: '',
-        page: `${currentPage}`,
-      });
-      router.push(`/?${params.toString()}`);
-      //navigate(`/?page=${currentPage}`, { replace: true });
-      //setParams({ search: '', page: `${currentPage}` });
+      handleSearch('', currentPage);
     }
     if (searchInput) {
-      handleSearch(searchInput);
-      const params = new URLSearchParams({
-        search: searchInput,
-        page: `${currentPage}`,
-      });
-      router.push(`/?${params.toString()}`);
-      //navigate(`/?page=${currentPage}`, { replace: true });
-      //setParams({ search: searchInput, page: `${currentPage}` });
+      handleSearch(searchInput, currentPage);
     }
   }, [
     data,
@@ -87,22 +75,12 @@ const MainPage = () => {
     setTotalCount,
     setSearchInput,
     router,
-    // navigate,
-    //setParams,
     showDetails,
   ]);
 
   const handleClickDetails = () => {
     if (showDetails) {
       setShowDetails(false);
-      const params = new URLSearchParams({
-        search: searchInput,
-        page: `${1}`,
-      });
-      router.push(`/?${params.toString()}`);
-      //const page = searchParams.get('page');
-      //navigate(`/?page=${page}`, { replace: true });
-      //setParams({ search: searchInput, page: '1' });
     }
   };
 
@@ -146,36 +124,32 @@ const MainPage = () => {
           onSelectItem={setSelectedItem}
           currentPage={currentPage}
         />
-        {
-          <div className={styles.pagination}>
+
+        <div className={styles.pagination}>
+          <button
+            onClick={handlePageChangePrev}
+            disabled={data?.previous === null}
+          >
+            Previous
+          </button>
+          {getPageNumbers().map((page) => (
             <button
-              onClick={handlePageChangePrev}
-              disabled={data?.previous === null}
+              key={page}
+              onClick={() => handlePageChange(page)}
+              disabled={page === currentPage}
             >
-              Previous
+              {page}
             </button>
-            {getPageNumbers().map((page) => (
-              <button
-                key={page}
-                onClick={() => handlePageChange(page)}
-                disabled={page === currentPage}
-              >
-                {page}
-              </button>
-            ))}
-            <button
-              onClick={handlePageChangeNext}
-              disabled={data?.next === null}
-            >
-              Next
-            </button>
-          </div>
-        }
+          ))}
+          <button onClick={handlePageChangeNext} disabled={data?.next === null}>
+            Next
+          </button>
+        </div>
+
         {selectedItems.length > 0 && <Flyout selectedItems={selectedItems} />}
       </div>
       {showDetails && (
         <div className={`${styles.wrapperDetails} ${theme}`}>
-          {/* <Outlet /> */}
           <Details setShowDetails={setShowDetails} item={selectedItem!} />
         </div>
       )}
@@ -183,13 +157,12 @@ const MainPage = () => {
   );
 
   let content;
-  if (isLoading) {
+  if (!isClient) {
     content = <h4>Loading...</h4>;
-  } else if (isError) {
-    content = <div>Error loading results</div>;
   } else {
     content = renderContent();
   }
+
   return (
     <div className={`${styles.wrapper} ${theme}`}>
       <header className={styles.wrapperHeader}>

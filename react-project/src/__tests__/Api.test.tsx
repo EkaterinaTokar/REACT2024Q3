@@ -1,5 +1,4 @@
 import '@testing-library/jest-dom';
-
 import { SearchResult } from '../components/utils/interface';
 import { apiActions, apiReducer, initialState } from '../pages/api/api.slice';
 
