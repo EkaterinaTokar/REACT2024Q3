@@ -1,7 +1,6 @@
 import styles from './Details.module.css';
-import React from 'react';
-import { MouseEventHandler } from 'react';
-import { SearchResult } from '../../components/utils/interface';
+import React, { MouseEventHandler } from 'react';
+import { SearchResult } from '../components/utils/interface';
 
 interface SearchResultsProps {
   setShowDetails: React.Dispatch<React.SetStateAction<boolean>>;

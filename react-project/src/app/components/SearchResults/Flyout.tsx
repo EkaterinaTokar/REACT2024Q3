@@ -3,8 +3,8 @@ import { useDispatch } from 'react-redux';
 import { saveAs } from 'file-saver';
 import styles from './Flyout.module.css';
 import { SearchResult } from '../utils/interface';
-import { AppDispatch } from '../../pages/api/store';
-import { apiActions } from '../../pages/api/api.slice';
+import { AppDispatch } from '../../api/store';
+import { apiActions } from '../../api/api.slice';
 
 interface FlyoutProps {
   selectedItems: SearchResult[];

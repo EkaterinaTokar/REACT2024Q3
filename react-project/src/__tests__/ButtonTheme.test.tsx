@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
-import { ThemeContext } from '../components/Theme/ThemeContext';
-import ButtonTheme from '../components/Theme/ButtonTheme';
+import { ThemeContext } from '../app/components/Theme/ThemeContext';
+import ButtonTheme from '../app/components/Theme/ButtonTheme';
 
 describe('ButtonTheme component', () => {
   test('should render without crashing', () => {

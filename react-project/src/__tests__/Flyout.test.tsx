@@ -2,8 +2,8 @@ import '@testing-library/jest-dom';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { configureStore, EnhancedStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
-import { apiActions, apiReducer } from '../pages/api/api.slice';
-import Flyout from '../components/SearchResults/Flyout';
+import { apiActions, apiReducer } from '../app/api/api.slice';
+import Flyout from '../app/components/SearchResults/Flyout';
 
 jest.mock('file-saver', () => ({
   ...jest.requireActual('file-saver'),

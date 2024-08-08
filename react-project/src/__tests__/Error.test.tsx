@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom';
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
-import ErrorButton from '../components/Error/ErrButton';
-import ErrorBoundary from '../components/Error/ErrorBoundary';
+import ErrorButton from '../app/components/Error/ErrButton';
+import ErrorBoundary from '../app/components/Error/ErrorBoundary';
 
 function renderWithContext(element: React.ReactElement) {
   render(<ErrorBoundary>{element}</ErrorBoundary>);

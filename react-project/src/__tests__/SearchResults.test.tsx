@@ -2,10 +2,10 @@ import '@testing-library/jest-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { render, screen } from '@testing-library/react';
-import { SearchResult } from '../components/utils/interface';
+import { SearchResult } from '../app/components/utils/interface';
 import { configureStore } from '@reduxjs/toolkit';
-import SearchResults from '../components/SearchResults/SearchResults';
-import { apiReducer } from '../pages/api/api.slice';
+import { apiReducer } from '../app/api/api.slice';
+import SearchResults from '../app/components/SearchResults/SearchResults';
 
 interface RootState {
   api: {

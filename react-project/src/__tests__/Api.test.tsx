@@ -1,6 +1,6 @@
 import '@testing-library/jest-dom';
-import { SearchResult } from '../components/utils/interface';
-import { apiActions, apiReducer, initialState } from '../pages/api/api.slice';
+import { SearchResult } from '../app/components/utils/interface';
+import { apiActions, apiReducer, initialState } from '../app/api/api.slice';
 
 const mockSearchResult: SearchResult = {
   name: 'test 1',

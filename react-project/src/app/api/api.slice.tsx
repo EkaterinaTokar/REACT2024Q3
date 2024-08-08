@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { SearchResult } from '../../components/utils/interface';
+import { SearchResult } from '../components/utils/interface';
 
 export interface SelectedItemState {
   SelectedItems: SearchResult[];

@@ -3,11 +3,13 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { store } from '../pages/api/store';
-import MainPage from '../components/MainPage';
+import { store } from '../app/api/store';
+import MainPage from '../app/components/MainPage';
 
 jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(),
+  useRouter: () => ({
+    push: jest.fn(),
+  }),
 }));
 
 function renderWithContext(element: React.ReactElement) {

@@ -2,8 +2,8 @@ import React from 'react';
 import styles from './SearchResults.module.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { SearchResult } from '../utils/interface';
-import { AppDispatch, RootState } from '../../pages/api/store';
-import { apiActions } from '../../pages/api/api.slice';
+import { AppDispatch, RootState } from '../../api/store';
+import { apiActions } from '../../api/api.slice';
 
 interface SearchResultsProps {
   resultCards: SearchResult[];

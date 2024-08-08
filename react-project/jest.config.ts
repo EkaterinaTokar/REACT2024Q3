@@ -3,7 +3,9 @@ export default {
   collectCoverage: true,
   collectCoverageFrom: [
     'src/**/*.{js,jsx,ts,tsx}',
-    '!src/components/utils/interface.ts',
+    '!src/app/components/utils/interface.ts',
+    '!src/app/ClientLayout.tsx',
+    '!src/app/layout.tsx',
     '!**/*.d.ts',
     '!**/node_modules/**',
     '!<rootDir>/out/**',

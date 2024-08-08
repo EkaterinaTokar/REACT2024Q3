@@ -3,9 +3,9 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { store } from '../pages/api/store';
-import Details from '../pages/details/[detailName]';
-import { SearchResult } from '../components/utils/interface';
+import { store } from '../app/api/store';
+import Details from '../app/details/[detailName]';
+import { SearchResult } from '../app/components/utils/interface';
 
 jest.mock('next/navigation', () => ({
   ...jest.requireActual('next/navigation'),

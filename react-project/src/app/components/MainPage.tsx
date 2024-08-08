@@ -1,20 +1,21 @@
-import { useCallback, useContext, useEffect, useState } from 'react';
+'use client';
+
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import ErrorButton from './Error/ErrButton';
 import styles from './MainPage.module.css';
-import React from 'react';
 import { ThemeContext } from './Theme/ThemeContext';
 import { useDispatch, useSelector } from 'react-redux';
 import ButtonTheme from './Theme/ButtonTheme';
-import { SearchResponse } from '../pages/api/api-service';
-import { AppDispatch, RootState } from '../pages/api/store';
-import { apiActions } from '../pages/api/api.slice';
+import { SearchResponse } from '../api/api-service';
+import { AppDispatch, RootState } from '../api/store';
+import { apiActions } from '../api/api.slice';
 import { useLocalStorage } from './CustomHookLocalStorage';
-import SearchResults from './SearchResults/SearchResults';
-import Flyout from '../components/SearchResults/Flyout';
 import { SearchResult } from './utils/interface';
 import { useRouter } from 'next/navigation';
+import Details from '../details/[detailName]';
+import SearchResults from './SearchResults/SearchResults';
+import Flyout from './SearchResults/Flyout';
 import SearchBar from './SearchBar/SearchBar ';
-import Details from '../pages/details/[detailName]';
 
 interface MainPageProps {
   data: SearchResponse;
@@ -42,15 +43,7 @@ const MainPage: React.FC<MainPageProps> = ({ data }) => {
   const handleSearch = useCallback(
     (query: string, page?: number) => {
       setSearchInput(query);
-      const currentSearchParams = new URLSearchParams(window.location.search);
-      const currentQuery = currentSearchParams.get('search') || '';
-      const currentPage = currentSearchParams.get('page') || '1';
-      if (currentQuery !== query || currentPage !== `${page}`) {
-        router.push(
-          `/?search=${encodeURIComponent(query)}&page=${page}`,
-          undefined,
-        );
-      }
+      router.push(`/?search=${query}&page=${page}`);
     },
     [setSearchInput, router],
   );
@@ -62,9 +55,11 @@ const MainPage: React.FC<MainPageProps> = ({ data }) => {
     }
     if (!searchInput && !showDetails) {
       handleSearch('', currentPage);
+      router.push(`/?search=${searchInput}&page=${currentPage}`);
     }
     if (searchInput) {
       handleSearch(searchInput, currentPage);
+      router.push(`/?search=${searchInput}&page=${currentPage}`);
     }
   }, [
     data,
@@ -74,8 +69,8 @@ const MainPage: React.FC<MainPageProps> = ({ data }) => {
     dispatch,
     setTotalCount,
     setSearchInput,
-    router,
     showDetails,
+    router,
   ]);
 
   const handleClickDetails = () => {

@@ -35,7 +35,9 @@
         "name": "next"
       }
     ],
-    "baseUrl": "./",
+    //"baseUrl": "./",
+    
+    
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
