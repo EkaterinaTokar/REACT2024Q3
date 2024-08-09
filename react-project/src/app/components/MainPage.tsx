@@ -11,7 +11,7 @@ import { AppDispatch, RootState } from '../api/store';
 import { apiActions } from '../api/api.slice';
 import { useLocalStorage } from './CustomHookLocalStorage';
 import { SearchResult } from './utils/interface';
-import { useRouter } from 'next/navigation';
+//import { useRouter } from 'next/navigation';
 import Details from '../details/[detailName]';
 import SearchResults from './SearchResults/SearchResults';
 import Flyout from './SearchResults/Flyout';
@@ -27,7 +27,7 @@ const MainPage: React.FC<MainPageProps> = ({ data }) => {
   const [totalCount, setTotalCount] = useState<number>(0);
   const [showDetails, setShowDetails] = useState<boolean>(false);
   const [selectedItem, setSelectedItem] = useState<SearchResult | null>(null);
-  const router = useRouter();
+  //const router = useRouter();
   const { theme } = useContext(ThemeContext);
   const dispatch = useDispatch<AppDispatch>();
   const [isClient, setIsClient] = useState(false);
@@ -43,9 +43,9 @@ const MainPage: React.FC<MainPageProps> = ({ data }) => {
   const handleSearch = useCallback(
     (query: string, page?: number) => {
       setSearchInput(query);
-      router.push(`/?search=${query}&page=${page}`);
+      //router.push(`/?search=${query}&page=${page}`);
     },
-    [setSearchInput, router],
+    [setSearchInput],
   );
   useEffect(() => {
     setIsClient(true);
@@ -55,11 +55,11 @@ const MainPage: React.FC<MainPageProps> = ({ data }) => {
     }
     if (!searchInput && !showDetails) {
       handleSearch('', currentPage);
-      router.push(`/?search=${searchInput}&page=${currentPage}`);
+     // router.push(`/?search=${searchInput}&page=${currentPage}`);
     }
     if (searchInput) {
       handleSearch(searchInput, currentPage);
-      router.push(`/?search=${searchInput}&page=${currentPage}`);
+     // router.push(`/?search=${searchInput}&page=${currentPage}`);
     }
   }, [
     data,
@@ -70,7 +70,6 @@ const MainPage: React.FC<MainPageProps> = ({ data }) => {
     setTotalCount,
     setSearchInput,
     showDetails,
-    router,
   ]);
 
   const handleClickDetails = () => {
