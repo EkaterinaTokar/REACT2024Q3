@@ -14,20 +14,20 @@ export interface FormData {
 }
 
 export interface FormState {
-  uncontrolledFormData: FormData[];
+  setReactHookFormData: FormData[];
 }
 
 export const initialState: FormState = {
-  uncontrolledFormData: [],
+  setReactHookFormData: [],
 };
-export const formSlice = createSlice({
-  name: 'form',
+export const formHookSlice = createSlice({
+  name: 'hookForm',
   initialState,
   reducers: {
-    setUncontrolledFormData(state, action) {
-      state.uncontrolledFormData.push(action.payload);
+    setReactHookFormData(state, action) {
+      state.setReactHookFormData.push(action.payload);
     },
   },
 });
-export const uncontrolledFormActions = formSlice.actions;
-export const uncontrolledFormReducer = formSlice.reducer;
+export const reactHookFormActions = formHookSlice.actions;
+export const reactHookFormReducer = formHookSlice.reducer;

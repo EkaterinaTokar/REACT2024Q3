@@ -1,0 +1,38 @@
+.form{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 700px;
+    box-shadow: 0px 5px 10px 2px rgba(34, 60, 80, 0.2);
+    border-radius: 10px;
+    margin: 50px auto;
+    padding: 30px;
+}
+.formRow{
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+    align-items: center;
+    
+}
+.formInput{
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    font-size: 25px;
+    width: 500px;
+}
+
+.error {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.suggestionsListItem {
+    padding: 10px;
+    list-style: none;
+    cursor: pointer;
+}
+.suggestionsListItem:hover {
+    background-color: #f0f0f0;
+}
